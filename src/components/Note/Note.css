@@ -1,4 +1,8 @@
 .Note-title {
-    font-weight: bold;
-    font-size: 15px;
+  font-weight: bold;
+  font-size: 15px;
+}
+
+.Card {
+  height: 500px;
 }

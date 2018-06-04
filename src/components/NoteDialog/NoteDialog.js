@@ -1,30 +1,32 @@
-import React, { Component } from 'react';
-import Button from '@material-ui/core/Button';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import Slide from '@material-ui/core/Slide';
-import TextField from '@material-ui/core/TextField';
+import React, {Component} from "react";
+import Button from "@material-ui/core/Button";
+import Dialog from "@material-ui/core/Dialog";
+import DialogActions from "@material-ui/core/DialogActions";
+import DialogContent from "@material-ui/core/DialogContent";
+import DialogTitle from "@material-ui/core/DialogTitle";
+import Slide from "@material-ui/core/Slide";
+import TextField from "@material-ui/core/TextField";
 
 function Transition(props) {
     return <Slide direction="up" {...props} />;
 }
 
 class AddNoteDialog extends Component {
-    constructor(props){
+    constructor(props) {
         super(props);
         this.state = {
-            title: "",
-            content: ""
-        }
+            id: this.props.editNote ? this.props.editNote.id: "",
+            title: this.props.editNote ? this.props.editNote.title : "",
+            content: this.props.editNote ? this.props.editNote.content : ""
+        };
     }
 
     handleChange = (event) => {
-        this.setState({ [event.target.name]: event.target.value});
+        this.setState({[event.target.name]: event.target.value});
     };
 
     render() {
+        let isAddNote = !this.props.editNote;
         return (
             <div>
                 <Dialog
@@ -34,7 +36,7 @@ class AddNoteDialog extends Component {
                     fullWidth={true}
                 >
                     <DialogTitle>
-                        Create a new Note
+                        {isAddNote ? "Create a new note" : "Edit a note"}
                     </DialogTitle>
                     <DialogContent>
                         <TextField
@@ -44,6 +46,7 @@ class AddNoteDialog extends Component {
                             label="Title"
                             type="text"
                             fullWidth
+                            defaultValue={this.state.title}
                             onChange={this.handleChange}
                         />
                         <TextField
@@ -53,6 +56,7 @@ class AddNoteDialog extends Component {
                             multiline
                             fullWidth
                             rows="5"
+                            defaultValue={this.state.content}
                             onChange={this.handleChange}
                         />
                     </DialogContent>
@@ -60,8 +64,8 @@ class AddNoteDialog extends Component {
                         <Button onClick={this.props.handleClose} color="secondary">
                             Cancel
                         </Button>
-                        <Button onClick={() => this.props.handleAdd(this.state.title, this.state.content)} color="primary">
-                            Add
+                        <Button onClick={() => this.props.handleSave(isAddNote, {id: this.state.id, title: this.state.title, content: this.state.content})} color="primary">
+                            Save
                         </Button>
                     </DialogActions>
                 </Dialog>

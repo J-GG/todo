@@ -1,43 +1,45 @@
-import React, { Component } from 'react';
-import { withStyles } from '@material-ui/core/styles';
+import React, {Component} from "react";
+import {withStyles} from "@material-ui/core/styles";
 import AddBtn from "../AddBtn/AddBtn";
-import AddNoteDialog from "../AddNoteDialog/AddNoteDialog";
+import NoteDialog from "../NoteDialog/NoteDialog";
 import Note from "../Note/Note";
-import Snackbar from '@material-ui/core/Snackbar';
-import Button from '@material-ui/core/Button';
-import IconButton from '@material-ui/core/IconButton';
-import CloseIcon from '@material-ui/icons/Close';
-import './Content.css';
+import Snackbar from "@material-ui/core/Snackbar";
+import Button from "@material-ui/core/Button";
+import IconButton from "@material-ui/core/IconButton";
+import CloseIcon from "@material-ui/icons/Close";
+import "./Content.css";
 
 const styles = {
     AddBtn: {
-        position: "absolute",
+        position: "fixed",
         right: "25px",
         bottom: "25px"
     },
     Note: {
         margin: "10px",
         width: "250px",
-        maxHeight: "250px",
         cursor: "pointer"
     }
 };
 
 class Content extends Component {
 
-    constructor(props){
+    constructor(props) {
         super(props);
 
         let notes = [];
         try {
             notes = localStorage.getItem("notes") !== null ? JSON.parse(localStorage.getItem("notes")) : notes;
-        } catch (e) {}
+        } catch (e) {
+        }
 
         this.state = {
             notes: notes,
+            isAddNoteDialog: true,
             addNoteDialogOpen: false,
             snackbarOpen: false,
-            deletedNote: {}
+            deletedNote: undefined,
+            editNote: undefined,
         };
     }
 
@@ -46,31 +48,46 @@ class Content extends Component {
     };
 
     handleShowAddNoteDialog = () => {
-        this.setState({addNoteDialogOpen: true});
+        this.setState({
+            editNote: undefined,
+            addNoteDialogOpen: true
+        });
     };
 
-    addNote = (title, content) => {
+    saveNote = (isAddNote, note) => {
         this.setState({addNoteDialogOpen: false});
 
-        if(title.length > 0 || content.length > 0) {
-            let id = this.state.notes.length > 0 ? this.state.notes[this.state.notes.length - 1].id + 1 : 0;
-            let note = {
-                id: id,
-                title: title,
-                content: content
-            };
-            let newNotes = [...this.state.notes, note];
-            this.setState({
-                notes: newNotes
-            });
-            localStorage.setItem('notes', JSON.stringify(newNotes));
+        if (note.title.length > 0 || note.content.length > 0) {
+            if (isAddNote) {
+                let id = Math.max.apply(Math, this.state.notes.map((note) => note.id)) + 1;
+                let newNote = {
+                    id: id,
+                    title: note.title,
+                    content: note.content
+                };
+                this.state.notes.push(newNote);
+            } else {
+               this.state.notes.find((element, index, notes) => {
+                   if (element.id !== note.id) {
+                        return false;
+                    }
+
+                    element.title = note.title;
+                    element.content = note.content;
+                    notes.splice(index, 1, element);
+
+                    return true;
+                });
+            }
+            console.log(this.state.notes);
+            localStorage.setItem('notes', JSON.stringify(this.state.notes));
         }
     };
 
-    handleDeleteBtnClick = (key) => {
+    handleDeleteBtnClick = (noteKey) => {
         let notes = this.state.notes;
         notes.find((element, index, notes) => {
-            if(element.id !== key){
+            if (element.id !== noteKey) {
                 return false;
             }
 
@@ -90,7 +107,7 @@ class Content extends Component {
 
     handleUndoDeleteNode = () => {
         this.handleSnackbarClose();
-        if(this.state.deletedNote !== undefined) {
+        if (this.state.deletedNote !== undefined) {
             this.state.notes.push(this.state.deletedNote[0]);
             this.setState({
                 deletedNote: undefined
@@ -100,14 +117,28 @@ class Content extends Component {
     };
 
     handleSnackbarClose = () => {
-        this.setState({ snackbarOpen: false });
+        this.setState({snackbarOpen: false});
+    };
+
+    handleNoteClick = (noteKey) => {
+        let note = this.state.notes.find((element) => {
+            return element.id === noteKey;
+        });
+        this.setState({
+            editNote: {
+                id: note.id,
+                title: note.title,
+                content: note.content
+            },
+            addNoteDialogOpen: true
+        });
     };
 
     render() {
         return (
             <div className="Content">
                 <Snackbar
-                    anchorOrigin={{ vertical: 'bottom', horizontal: "left"}}
+                    anchorOrigin={{vertical: 'bottom', horizontal: "left"}}
                     open={this.state.snackbarOpen}
                     onClose={this.handleSnackbarClose}
                     autoHideDuration={6000}
@@ -118,22 +149,23 @@ class Content extends Component {
                         </Button>,
                         <IconButton
                             key="close"
-                            aria-label="Close"
                             color="inherit"
                             onClick={this.handleSnackbarClose}
                         >
                             <CloseIcon />
-                        </IconButton>,
+                        </IconButton>
                     ]}
                 />
                 <AddBtn
                     className={this.props.classes.AddBtn}
-                    onClick={this.handleShowAddNoteDialog }
+                    onClick={this.handleShowAddNoteDialog}
                 />
-                <AddNoteDialog
+                <NoteDialog
                     open={this.state.addNoteDialogOpen}
-                    handleAdd={this.addNote}
+                    handleSave={this.saveNote}
                     handleClose={this.handleAddNoteDialogClose}
+                    editNote={this.state.editNote}
+                    key={Math.random()}
                 />
                 <div className="NotesList">
                     {
@@ -145,6 +177,7 @@ class Content extends Component {
                                 title={note.title}
                                 content={note.content}
                                 handleDelete={this.handleDeleteBtnClick}
+                                handleNoteClick={this.handleNoteClick}
                             />
                         ))
                     }
