@@ -17,8 +17,7 @@ const styles = {
     },
     Note: {
         margin: "10px",
-        width: "250px",
-        cursor: "pointer"
+        width: "250px"
     }
 };
 
@@ -54,7 +53,7 @@ class Content extends Component {
         });
     };
 
-    saveNote = (isAddNote, note) => {
+    handleSaveNote = (isAddNote, note) => {
         this.setState({addNoteDialogOpen: false});
 
         if (note.title.length > 0 || note.content.length > 0) {
@@ -67,8 +66,8 @@ class Content extends Component {
                 };
                 this.state.notes.push(newNote);
             } else {
-               this.state.notes.find((element, index, notes) => {
-                   if (element.id !== note.id) {
+                this.state.notes.find((element, index, notes) => {
+                    if (element.id !== note.id) {
                         return false;
                     }
 
@@ -79,7 +78,6 @@ class Content extends Component {
                     return true;
                 });
             }
-            console.log(this.state.notes);
             localStorage.setItem('notes', JSON.stringify(this.state.notes));
         }
     };
@@ -134,6 +132,22 @@ class Content extends Component {
         });
     };
 
+    handleColorChange = (noteKey, color) => {
+        this.state.notes.find((note, index, notes) => {
+            if (note.id !== noteKey) {
+                return false;
+            }
+
+            note.color = color;
+            notes.splice(index, 1, note);
+            this.setState({
+                notes: this.state.notes
+            });
+            localStorage.setItem('notes', JSON.stringify(this.state.notes));
+            return true;
+        });
+    };
+
     render() {
         return (
             <div className="Content">
@@ -162,7 +176,7 @@ class Content extends Component {
                 />
                 <NoteDialog
                     open={this.state.addNoteDialogOpen}
-                    handleSave={this.saveNote}
+                    handleSave={this.handleSaveNote}
                     handleClose={this.handleAddNoteDialogClose}
                     editNote={this.state.editNote}
                     key={Math.random()}
@@ -175,9 +189,11 @@ class Content extends Component {
                                 key={note.id}
                                 id={note.id}
                                 title={note.title}
+                                color={note.color}
                                 content={note.content}
                                 handleDelete={this.handleDeleteBtnClick}
                                 handleNoteClick={this.handleNoteClick}
+                                handleColorChange={this.handleColorChange}
                             />
                         ))
                     }
