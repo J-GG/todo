@@ -25,7 +25,7 @@ import cyan from "@material-ui/core/colors/cyan";
 
 import "./Note.css";
 
-const styles= {
+const styles = {
     colorButton: {
         width: "20px",
         height: "20px",

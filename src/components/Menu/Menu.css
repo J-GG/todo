@@ -1,0 +1,25 @@
+.Menu{
+  height: 100%;
+  position: fixed;
+  z-index: 50;
+}
+
+.Menu > :first-child{
+  height: 100%;
+}
+
+.Menu-itemsList{
+  width: 240px;
+}
+
+.Menu-categoryEditIcon,
+.Menu-categoryEditIcon {
+  display: block;
+}
+
+
+@media (any-hover:hover) {
+  .Menu-categoryEditIcon {
+    display: none;
+  }
+}
