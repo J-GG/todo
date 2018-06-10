@@ -146,6 +146,7 @@ class Content extends Component {
                     handleClose={this.handleAddNoteDialogClose}
                     note={this.state.noteShownInNoteDialog}
                     key={this.state.noteShownInNoteDialog.uuid}
+                    labels={this.props.labels}
                 />
                 <div className={this.props.classes.NotesList}>
                     {

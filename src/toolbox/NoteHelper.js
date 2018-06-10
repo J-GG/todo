@@ -59,7 +59,7 @@ class NoteHelper {
                 throw new TypeError("The note is not a NoteModel");
             }
             let noteDuplicate = Object.assign(new NoteModel(), note);
-            noteDuplicate.labelsUUId = noteDuplicate.labels.map(label => label.uuid);
+            noteDuplicate.labelsUuid = noteDuplicate.labels.map(label => label.uuid);
             delete noteDuplicate.labels;
             notesDuplicate.push(noteDuplicate);
         });

@@ -3,7 +3,7 @@ import LabelModel from "./LabelModel";
 import UUID from "../toolbox/UUID";
 
 class NoteModel {
-    constructor(uuid, title = "", content = "", color = ColorEnum.WHITE, labels = []) {
+    constructor(uuid, title = "", content = "", color = ColorEnum.WHITE.name, labels = []) {
         this.uuid = UUID.isUUID(uuid) ? uuid : UUID.generateUUID();
         this.title = title;
         this.content = content;

@@ -93,7 +93,7 @@ class AppController extends Component {
         return (
             <App
                 labels={this.state.labels}
-                notes={this.state.notes}
+                notes={this.state.currentLabel ? this.state.currentLabel.notes : this.state.notes}
                 changeCurrentLabel={this.changeCurrentLabel}
                 currentLabel={this.state.currentLabel}
                 saveLabel={this.saveLabel}
