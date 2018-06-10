@@ -3,194 +3,161 @@ import {withStyles} from "@material-ui/core/styles";
 import AddBtn from "../AddBtn/AddBtn";
 import NoteDialog from "../NoteDialog/NoteDialog";
 import Note from "../Note/Note";
-import Snackbar from "@material-ui/core/Snackbar";
-import Button from "@material-ui/core/Button";
-import IconButton from "@material-ui/core/IconButton";
-import CloseIcon from "@material-ui/icons/Close";
-import "./Content.css";
+import SnackbarNote from "../SnackbarNote/SnackbarNote";
+import NoteModel from "../../models/NoteModel";
+import classNames from 'classnames';
 
-const styles = {
+const styles = theme => ({
+    Content: {
+        margin: "70px 10px 10px 80px",
+        transition: theme.transitions.create('margin', {
+            easing: theme.transitions.easing.sharp,
+            duration: theme.transitions.duration.enteringScreen,
+        })
+    },
+    ContentMenuOpen: {
+        marginLeft: 270,
+        transition: theme.transitions.create('margin', {
+            easing: theme.transitions.easing.sharp,
+            duration: theme.transitions.duration.enteringScreen,
+        })
+    },
     AddBtn: {
         position: "fixed",
-        right: "25px",
-        bottom: "25px"
+        right: 25,
+        bottom: 25
+    },
+    NotesList: {
+        display: "flex",
+        flexWrap: "wrap"
     },
     Note: {
-        margin: "10px",
-        width: "250px"
+        margin: 10,
+        width: 250
     }
-};
+});
 
 class Content extends Component {
 
     constructor(props) {
         super(props);
 
-        let notes = [];
-        try {
-            notes = localStorage.getItem("notes") !== null ? JSON.parse(localStorage.getItem("notes")) : notes;
-        } catch (e) {
-        }
-
         this.state = {
-            notes: notes,
-            isAddNoteDialog: true,
-            addNoteDialogOpen: false,
-            snackbarOpen: false,
-            deletedNote: undefined,
-            editNote: undefined,
+            isAddNoteDialogOpen: false,
+            isSnackbarOpen: false,
+            lastDeletedNote: undefined,
+            noteShownInNoteDialog: new NoteModel(),
         };
     }
 
     handleAddNoteDialogClose = () => {
-        this.setState({addNoteDialogOpen: false});
+        this.setState({isAddNoteDialogOpen: false});
     };
 
     handleShowAddNoteDialog = () => {
         this.setState({
-            editNote: undefined,
-            addNoteDialogOpen: true
+            noteShownInNoteDialog: new NoteModel(),
+            isAddNoteDialogOpen: true
         });
     };
 
-    handleSaveNote = (isAddNote, note) => {
-        this.setState({addNoteDialogOpen: false});
-
-        if (note.title.length > 0 || note.content.length > 0) {
-            if (isAddNote) {
-                let id = Math.max.apply(Math, this.state.notes.map((note) => note.id)) + 1;
-                let newNote = {
-                    id: id,
-                    title: note.title,
-                    content: note.content
-                };
-                this.state.notes.push(newNote);
-            } else {
-                this.state.notes.find((element, index, notes) => {
-                    if (element.id !== note.id) {
-                        return false;
-                    }
-
-                    element.title = note.title;
-                    element.content = note.content;
-                    notes.splice(index, 1, element);
-
-                    return true;
-                });
-            }
-            localStorage.setItem('notes', JSON.stringify(this.state.notes));
-        }
+    handleSaveNote = (note) => {
+        this.setState({isAddNoteDialogOpen: false});
+        this.props.saveNote(note);
     };
 
-    handleDeleteBtnClick = (noteKey) => {
-        let notes = this.state.notes;
-        notes.find((element, index, notes) => {
-            if (element.id !== noteKey) {
+    handleDeleteBtnClick = (noteUuid) => {
+        this.props.notes.find((note, index, notes) => {
+            if (note.uuid !== noteUuid) {
                 return false;
             }
 
             let deletedNote = notes.splice(index, 1);
             this.setState({
-                deletedNote: deletedNote
+                lastDeletedNote: deletedNote,
+                isSnackbarOpen: true,
+                notes: notes
             });
+            this.props.deleteNote(note);
 
             return true;
         });
-        this.setState({
-            snackbarOpen: true,
-            notes: notes
-        });
-        localStorage.setItem('notes', JSON.stringify(this.state.notes));
     };
 
     handleUndoDeleteNode = () => {
         this.handleSnackbarClose();
-        if (this.state.deletedNote !== undefined) {
-            this.state.notes.push(this.state.deletedNote[0]);
+        if (this.state.lastDeletedNote !== undefined) {
+            this.props.saveNote(this.state.lastDeletedNote[0]);
             this.setState({
                 deletedNote: undefined
             });
-            localStorage.setItem('notes', JSON.stringify(this.state.notes));
         }
     };
 
     handleSnackbarClose = () => {
-        this.setState({snackbarOpen: false});
+        this.setState({isSnackbarOpen: false});
     };
 
-    handleNoteClick = (noteKey) => {
-        let note = this.state.notes.find((element) => {
-            return element.id === noteKey;
+    handleNoteClick = (noteUuid) => {
+        let note = this.props.notes.find((element) => {
+            return element.uuid === noteUuid;
         });
         this.setState({
-            editNote: {
-                id: note.id,
-                title: note.title,
-                content: note.content
-            },
-            addNoteDialogOpen: true
+            noteShownInNoteDialog: note ? note : new NoteModel(),
+            isAddNoteDialogOpen: true
         });
     };
 
-    handleColorChange = (noteKey, color) => {
-        this.state.notes.find((note, index, notes) => {
-            if (note.id !== noteKey) {
+    handleColorChange = (noteUuid, colorEnum) => {
+        this.props.notes.find((note, index, notes) => {
+            if (note.uuid !== noteUuid) {
                 return false;
             }
 
-            note.color = color;
+            note.color = colorEnum.name;
             notes.splice(index, 1, note);
             this.setState({
-                notes: this.state.notes
+                notes: notes
             });
-            localStorage.setItem('notes', JSON.stringify(this.state.notes));
+            this.props.saveNote(note);
+
             return true;
         });
     };
 
     render() {
         return (
-            <div className="Content">
-                <Snackbar
-                    anchorOrigin={{vertical: 'bottom', horizontal: "left"}}
-                    open={this.state.snackbarOpen}
+            <div
+                className={classNames(this.props.classes.Content, this.props.isMenuOpen && this.props.classes.ContentMenuOpen)}>
+                <SnackbarNote
+                    open={this.state.isSnackbarOpen}
                     onClose={this.handleSnackbarClose}
-                    autoHideDuration={6000}
-                    message={"Note deleted"}
-                    action={[
-                        <Button key="undo" color="secondary" size="small" onClick={this.handleUndoDeleteNode}>
-                            UNDO
-                        </Button>,
-                        <IconButton
-                            key="close"
-                            color="inherit"
-                            onClick={this.handleSnackbarClose}
-                        >
-                            <CloseIcon />
-                        </IconButton>
-                    ]}
+                    message="Note deleted"
+                    buttonMessage="UNDO"
+                    buttonMessageOnClick={this.handleUndoDeleteNode}
                 />
                 <AddBtn
                     className={this.props.classes.AddBtn}
                     onClick={this.handleShowAddNoteDialog}
                 />
                 <NoteDialog
-                    open={this.state.addNoteDialogOpen}
+                    open={this.state.isAddNoteDialogOpen}
                     handleSave={this.handleSaveNote}
                     handleClose={this.handleAddNoteDialogClose}
-                    editNote={this.state.editNote}
-                    key={Math.random()}
+                    note={this.state.noteShownInNoteDialog}
+                    key={this.state.noteShownInNoteDialog.uuid}
                 />
-                <div className="NotesList">
+                <div className={this.props.classes.NotesList}>
                     {
-                        this.state.notes.map((note) => (
+                        this.props.notes.map((note) => (
                             <Note
                                 className={this.props.classes.Note}
-                                key={note.id}
-                                id={note.id}
+                                key={note.uuid}
+                                uuid={note.uuid}
                                 title={note.title}
-                                color={note.color}
                                 content={note.content}
+                                labels={note.labels}
+                                color={note.color}
                                 handleDelete={this.handleDeleteBtnClick}
                                 handleNoteClick={this.handleNoteClick}
                                 handleColorChange={this.handleColorChange}

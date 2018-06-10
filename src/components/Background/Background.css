@@ -1,14 +1,14 @@
 @import url('https://fonts.googleapis.com/css?family=Pacifico');
 
-.Background-text{
-  z-index: -1;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%,-50%);
-  color: #E9E9E9;
-  font-family: Pacifico, Roboto, Arial;
-  font-size: 10vw;
-  user-select: none;
-  text-shadow: 2px 0 #E2E2E2, -2px 0 #E2E2E2, 0 2px #E2E2E2, 0 -2px #E2E2E2;
+.Background-text {
+    z-index: -1;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #E9E9E9;
+    font-family: Pacifico, Roboto, Arial;
+    font-size: 10vw;
+    user-select: none;
+    text-shadow: 2px 0 #E2E2E2, -2px 0 #E2E2E2, 0 2px #E2E2E2, 0 -2px #E2E2E2;
 }

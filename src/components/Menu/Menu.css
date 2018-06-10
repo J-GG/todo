@@ -1,25 +1,24 @@
-.Menu{
-  height: 100%;
-  position: fixed;
-  z-index: 50;
+.Menu {
+    height: 100%;
+    position: fixed;
+    z-index: 50;
 }
 
-.Menu > :first-child{
-  height: 100%;
+.Menu > :first-child {
+    height: 100%;
 }
 
-.Menu-itemsList{
-  width: 240px;
+.Menu-itemsList {
+    width: 240px;
 }
 
-.Menu-categoryEditIcon,
-.Menu-categoryEditIcon {
-  display: block;
+.Menu-labelEditIcon,
+.Menu-labelEditIcon {
+    display: block;
 }
 
-
-@media (any-hover:hover) {
-  .Menu-categoryEditIcon {
-    display: none;
-  }
+@media (any-hover: hover) {
+    .Menu-labelEditIcon {
+        display: none;
+    }
 }

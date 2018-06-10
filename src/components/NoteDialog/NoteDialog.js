@@ -15,18 +15,16 @@ class AddNoteDialog extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            id: this.props.editNote ? this.props.editNote.id: "",
-            title: this.props.editNote ? this.props.editNote.title : "",
-            content: this.props.editNote ? this.props.editNote.content : ""
+            note: this.props.note
         };
     }
 
     handleChange = (event) => {
-        this.setState({[event.target.name]: event.target.value});
+        this.state.note[event.target.name] = event.target.value;
     };
 
     render() {
-        let isAddNote = !this.props.editNote;
+        let isAddNote = !(this.state.note.title || this.state.note.content);
         return (
             <div>
                 <Dialog
@@ -41,22 +39,20 @@ class AddNoteDialog extends Component {
                     <DialogContent>
                         <TextField
                             autoFocus={true}
-                            id="title"
                             name="title"
                             label="Title"
                             type="text"
                             fullWidth
-                            defaultValue={this.state.title}
+                            defaultValue={this.state.note.title}
                             onChange={this.handleChange}
                         />
                         <TextField
-                            id="content"
                             name="content"
                             label="Content"
                             multiline
                             fullWidth
                             rows="5"
-                            defaultValue={this.state.content}
+                            defaultValue={this.state.note.content}
                             onChange={this.handleChange}
                         />
                     </DialogContent>
@@ -64,7 +60,9 @@ class AddNoteDialog extends Component {
                         <Button onClick={this.props.handleClose} color="secondary">
                             Cancel
                         </Button>
-                        <Button onClick={() => this.props.handleSave(isAddNote, {id: this.state.id, title: this.state.title, content: this.state.content})} color="primary">
+                        <Button
+                            onClick={() => this.props.handleSave(this.state.note)}
+                            color="primary">
                             Save
                         </Button>
                     </DialogActions>
