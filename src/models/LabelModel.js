@@ -3,7 +3,7 @@ import ColorEnum from "./ColorEnum";
 import UUID from "../toolbox/UUID";
 
 class LabelModel {
-    constructor(uuid, title = "", color = ColorEnum.WHITE) {
+    constructor(uuid, title = "", color = ColorEnum.WHITE.name) {
         this.uuid = UUID.isUUID(uuid) ? uuid : UUID.generateUUID();
         this.title = title;
         this.color = color;
@@ -29,7 +29,7 @@ class LabelModel {
             throw new TypeError("Parameter is not a NoteModel");
         }
 
-        return this.notes.find((element, index) => {
+        this.notes.find((element, index) => {
             if (note !== element) {
                 return false;
             }
@@ -41,6 +41,11 @@ class LabelModel {
         });
     }
 
+    removeAllNotes() {
+        for (let i = this.notes.length - 1; i >= 0; i--) {
+            this.removeNote(this.notes[i]);
+        }
+    }
 }
 
 export default LabelModel;

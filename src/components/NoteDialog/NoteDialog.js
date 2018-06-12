@@ -48,7 +48,7 @@ function Transition(props) {
     return <Slide direction="up" {...props} />;
 }
 
-class AddNoteDialog extends Component {
+class NoteDialog extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -58,24 +58,22 @@ class AddNoteDialog extends Component {
 
     handleChange = (event) => {
         if (event.target.name === "labels") {
-            let labels = [];
+            this.props.note.removeAllLabels();
             event.target.value.forEach(selectedLabelTitle => {
                 let label = this.props.labels.find(label => {
                     return label.title === selectedLabelTitle;
                 });
-                labels.push(label);
+                this.state.note.addLabel(label);
             });
-            this.state.note["labels"] = labels;
         } else {
             this.state.note[event.target.name] = event.target.value;
         }
         this.setState({
             note: this.state.note
-        })
+        });
     };
 
     render() {
-        let isAddNote = !(this.state.note.title || this.state.note.content);
         return (
             <div>
                 <Dialog
@@ -85,7 +83,7 @@ class AddNoteDialog extends Component {
                     fullWidth={true}
                 >
                     <DialogTitle>
-                        {isAddNote ? "Create a new note" : "Edit a note"}
+                        {this.props.isAddNote ? "Create a new note" : "Edit a note"}
                     </DialogTitle>
                     <DialogContent>
                         <TextField
@@ -107,7 +105,7 @@ class AddNoteDialog extends Component {
                             onChange={this.handleChange}
                         />
                         <FormControl className={this.props.classes.formControl}>
-                            <InputLabel htmlFor="select-multiple-chip">Chip</InputLabel>
+                            <InputLabel htmlFor="select-multiple-chip">Labels</InputLabel>
                             <Select
                                 multiple
                                 name="labels"
@@ -155,4 +153,4 @@ class AddNoteDialog extends Component {
     }
 }
 
-export default withStyles(styles, {withTheme: true})(AddNoteDialog);
+export default withStyles(styles, {withTheme: true})(NoteDialog);

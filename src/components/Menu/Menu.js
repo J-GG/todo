@@ -15,9 +15,12 @@ import Avatar from "@material-ui/core/Avatar";
 import PopupMenu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import Divider from '@material-ui/core/Divider';
+import LabelDialog from '../LabelDialog/LabelDialog';
+import Snackbar from "../Snackbar/Snackbar";
 
 import './Menu.css';
 import {fromName} from "../../models/ColorEnum";
+import LabelModel from "../../models/LabelModel";
 
 const styles = theme => ({
     drawerPaper: {
@@ -56,33 +59,92 @@ class Menu extends Component {
         super(props);
         this.state = {
             menuOpen: false,
-            showLabelMenuIcon: false
+            labelShownInLabelDialog: new LabelModel(),
+            isLabelDialogOpen: false,
+            menuOfLabelShown: undefined,
+            isSnackbarOpen: false
         };
     }
 
     handleMouseEnterLabel = (label) => {
         this.setState({
-            showCategoryMoreIcon: label.uuid
+            showLabelMoreIcon: label.uuid
         });
     };
 
     handleMouseLeaveLabel = () => {
         this.setState({
-            showCategoryMoreIcon: false
+            showLabelMoreIcon: false
         });
     };
 
-    handleLabelMoreClick = (event) => {
+    handleLabelMoreOpen = (event, label) => {
         this.setState({
-            anchorE1: event.currentTarget
+            anchorE1: event.currentTarget,
+            menuOfLabelShown: label
         });
     };
 
     handleLabelMoreClose = () => {
         this.setState({
             anchorE1: null,
-            showCategoryMoreIcon: false
+            showLabelMoreIcon: false,
+            menuOfLabelShown: undefined
         });
+    };
+
+    handleShowAddLabelDialog = () => {
+        this.setState({
+            labelShownInLabelDialog: new LabelModel(),
+            isLabelDialogOpen: true
+        });
+    };
+
+    handleSaveLabel = (label) => {
+        this.handleLabelDialogClose();
+        this.props.saveLabel(label);
+    };
+
+    handleLabelDialogClose = () => {
+        this.setState({isLabelDialogOpen: false});
+    };
+
+    handleLabelEdit = (label) => {
+        this.setState({
+            labelShownInLabelDialog: label,
+            isLabelDialogOpen: true
+        });
+        this.handleLabelMoreClose();
+    };
+
+    handleDeleteLabel = (label) => {
+        this.handleLabelMoreClose();
+
+        let notesDuplicate = Object.assign([], label.notes);
+
+        this.setState({
+            lastDeletedLabel: {label: label, notes: notesDuplicate},
+            isSnackbarOpen: true
+        });
+        this.props.deleteLabel(label);
+    };
+
+    handleSnackbarClose = () => {
+        this.setState({isSnackbarOpen: false});
+    };
+
+    handleUndoDeleteLabel = () => {
+        this.handleSnackbarClose();
+        if (this.state.lastDeletedLabel !== undefined) {
+            this.state.lastDeletedLabel.notes.forEach(note => {
+                note.addLabel(this.state.lastDeletedLabel.label);
+            });
+            this.props.saveLabel(this.state.lastDeletedLabel.label);
+
+            this.setState({
+                lastDeletedLabel: undefined
+            });
+        }
     };
 
     render() {
@@ -121,30 +183,28 @@ class Menu extends Component {
                                         </ListItemIcon>
                                         <ListItemText primary={label.title}/>
                                         <ListItemSecondaryAction
-                                            className={this.state.showCategoryMoreIcon === label.uuid ? "Menu-labelEditIcon--show" : "Menu-labelEditIcon"}
+                                            className={this.state.showLabelMoreIcon === label.uuid ? "Menu-labelEditIcon--show" : "Menu-labelEditIcon"}
                                             onMouseEnter={() => this.handleMouseEnterLabel(label)}
                                             onMouseLeave={this.handleMouseLeaveLabel}
                                         >
-                                            <IconButton
-                                                aria-owns={this.state.anchorEl ? 'simple-menu' : null}
-                                                onClick={this.handleLabelMoreClick}
-                                            >
+                                            <IconButton onClick={(event) => this.handleLabelMoreOpen(event, label)}>
                                                 <MoreVert/>
                                             </IconButton>
                                             <PopupMenu
-                                                id="simple-menu"
                                                 anchorEl={this.state.anchorE1}
-                                                open={Boolean(this.state.anchorE1)}
+                                                open={Boolean(this.state.menuOfLabelShown === label)}
                                                 onClose={this.handleLabelMoreClose}
                                             >
-                                                <MenuItem onClick={this.handleLabelMoreClose}>Edit</MenuItem>
-                                                <MenuItem onClick={this.handleLabelMoreClose}>Delete</MenuItem>
+                                                <MenuItem
+                                                    onClick={() => this.handleLabelEdit(label)}>Edit</MenuItem>
+                                                <MenuItem
+                                                    onClick={() => this.handleDeleteLabel(label)}>Delete</MenuItem>
                                             </PopupMenu>
                                         </ListItemSecondaryAction>
                                     </ListItem>
                                 ))
                             }
-                            <ListItem button>
+                            <ListItem button onClick={this.handleShowAddLabelDialog}>
                                 <ListItemIcon>
                                     <AddIcon/>
                                 </ListItemIcon>
@@ -153,6 +213,21 @@ class Menu extends Component {
                         </List>
                     </div>
                 </Drawer>
+                <LabelDialog
+                    open={this.state.isLabelDialogOpen}
+                    handleSave={this.handleSaveLabel}
+                    handleClose={this.handleLabelDialogClose}
+                    label={this.state.labelShownInLabelDialog}
+                    key={this.state.labelShownInLabelDialog.uuid}
+                    isAddLabel={!this.props.labels.map(label => label.uuid).includes(this.state.labelShownInLabelDialog.uuid)}
+                />
+                <Snackbar
+                    open={this.state.isSnackbarOpen}
+                    onClose={this.handleSnackbarClose}
+                    message="Label deleted"
+                    buttonMessage="UNDO"
+                    buttonMessageOnClick={this.handleUndoDeleteLabel}
+                />
             </div>
         );
     }

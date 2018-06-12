@@ -3,7 +3,7 @@ import {withStyles} from "@material-ui/core/styles";
 import AddBtn from "../AddBtn/AddBtn";
 import NoteDialog from "../NoteDialog/NoteDialog";
 import Note from "../Note/Note";
-import SnackbarNote from "../SnackbarNote/SnackbarNote";
+import Snackbar from "../Snackbar/Snackbar";
 import NoteModel from "../../models/NoteModel";
 import classNames from 'classnames';
 
@@ -43,53 +43,51 @@ class Content extends Component {
         super(props);
 
         this.state = {
-            isAddNoteDialogOpen: false,
+            isNoteDialogOpen: false,
             isSnackbarOpen: false,
             lastDeletedNote: undefined,
             noteShownInNoteDialog: new NoteModel(),
         };
     }
 
-    handleAddNoteDialogClose = () => {
-        this.setState({isAddNoteDialogOpen: false});
+    handleNoteDialogClose = () => {
+        this.setState({isNoteDialogOpen: false});
     };
 
     handleShowAddNoteDialog = () => {
         this.setState({
             noteShownInNoteDialog: new NoteModel(),
-            isAddNoteDialogOpen: true
+            isNoteDialogOpen: true
         });
     };
 
     handleSaveNote = (note) => {
-        this.setState({isAddNoteDialogOpen: false});
+        this.handleNoteDialogClose();
         this.props.saveNote(note);
     };
 
-    handleDeleteBtnClick = (noteUuid) => {
-        this.props.notes.find((note, index, notes) => {
-            if (note.uuid !== noteUuid) {
-                return false;
-            }
+    handleDeleteBtnClick = (note) => {
 
-            let deletedNote = notes.splice(index, 1);
-            this.setState({
-                lastDeletedNote: deletedNote,
-                isSnackbarOpen: true,
-                notes: notes
-            });
-            this.props.deleteNote(note);
+        let labelsDuplicate = Object.assign([], note.labels);
 
-            return true;
+        this.setState({
+            lastDeletedNote: {note: note, labels: labelsDuplicate},
+            isSnackbarOpen: true
         });
+
+        this.props.deleteNote(note);
     };
 
     handleUndoDeleteNode = () => {
         this.handleSnackbarClose();
         if (this.state.lastDeletedNote !== undefined) {
-            this.props.saveNote(this.state.lastDeletedNote[0]);
+            this.state.lastDeletedNote.labels.forEach(label => {
+                label.addNote(this.state.lastDeletedNote.note);
+            });
+            this.props.saveNote(this.state.lastDeletedNote.note);
+
             this.setState({
-                deletedNote: undefined
+                lastDeletedNote: undefined
             });
         }
     };
@@ -98,38 +96,26 @@ class Content extends Component {
         this.setState({isSnackbarOpen: false});
     };
 
-    handleNoteClick = (noteUuid) => {
-        let note = this.props.notes.find((element) => {
-            return element.uuid === noteUuid;
-        });
+    handleNoteClick = (note) => {
         this.setState({
-            noteShownInNoteDialog: note ? note : new NoteModel(),
-            isAddNoteDialogOpen: true
+            noteShownInNoteDialog: note,
+            isNoteDialogOpen: true
         });
     };
 
-    handleColorChange = (noteUuid, colorEnum) => {
-        this.props.notes.find((note, index, notes) => {
-            if (note.uuid !== noteUuid) {
-                return false;
-            }
-
-            note.color = colorEnum.name;
-            notes.splice(index, 1, note);
-            this.setState({
-                notes: notes
-            });
-            this.props.saveNote(note);
-
-            return true;
+    handleColorChange = (note, colorEnum) => {
+        note.color = colorEnum.name;
+        this.setState({
+            notes: this.state.notes
         });
+        this.props.saveNote(note);
     };
 
     render() {
         return (
             <div
                 className={classNames(this.props.classes.Content, this.props.isMenuOpen && this.props.classes.ContentMenuOpen)}>
-                <SnackbarNote
+                <Snackbar
                     open={this.state.isSnackbarOpen}
                     onClose={this.handleSnackbarClose}
                     message="Note deleted"
@@ -141,12 +127,13 @@ class Content extends Component {
                     onClick={this.handleShowAddNoteDialog}
                 />
                 <NoteDialog
-                    open={this.state.isAddNoteDialogOpen}
+                    open={this.state.isNoteDialogOpen}
                     handleSave={this.handleSaveNote}
-                    handleClose={this.handleAddNoteDialogClose}
+                    handleClose={this.handleNoteDialogClose}
                     note={this.state.noteShownInNoteDialog}
                     key={this.state.noteShownInNoteDialog.uuid}
                     labels={this.props.labels}
+                    isAddNote={!this.props.notes.map(note => note.uuid).includes(this.state.noteShownInNoteDialog.uuid)}
                 />
                 <div className={this.props.classes.NotesList}>
                     {
@@ -154,11 +141,7 @@ class Content extends Component {
                             <Note
                                 className={this.props.classes.Note}
                                 key={note.uuid}
-                                uuid={note.uuid}
-                                title={note.title}
-                                content={note.content}
-                                labels={note.labels}
-                                color={note.color}
+                                note={note}
                                 handleDelete={this.handleDeleteBtnClick}
                                 handleNoteClick={this.handleNoteClick}
                                 handleColorChange={this.handleColorChange}

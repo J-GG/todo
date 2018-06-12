@@ -34,6 +34,7 @@ class App extends Component {
                     saveLabel={this.props.saveLabel}
                     onClose={this.handleOpenMenu}
                     currentLabel={this.props.currentLabel}
+                    deleteLabel={this.props.deleteLabel}
                     changeCurrentLabel={this.props.changeCurrentLabel}
                 />
                 <Content

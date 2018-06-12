@@ -22,7 +22,26 @@ class AppController extends Component {
             return;
         }
 
-        console.log(label);
+        if (label.title) {
+            let labelToBeEdited = this.state.labels.find((element, index, labels) => {
+                if (element.uuid !== label.uuid) {
+                    return false;
+                }
+
+                labels.splice(index, 1, label);
+                this.setState({
+                    labels: labels
+                });
+
+                return true;
+            });
+
+            if (!labelToBeEdited) {
+                this.state.labels.push(label);
+            }
+        }
+
+        NoteHelper.saveData(this.state.labels, this.state.notes);
     };
 
     saveNote = (note) => {
@@ -64,6 +83,7 @@ class AppController extends Component {
                 return false;
             }
 
+            element.removeAllLabels();
             notes.splice(index, 1);
             this.setState({
                 notes: notes
@@ -74,6 +94,31 @@ class AppController extends Component {
 
         NoteHelper.saveData(this.state.labels, this.state.notes);
     };
+
+    deleteLabel = (label) => {
+        if (!label instanceof LabelModel) {
+            new TypeError("The label is not a LabelModel");
+            return;
+        }
+
+        this.state.labels.find((element, index, labels) => {
+            if (element.uuid !== label.uuid) {
+                return false;
+            }
+            console.log("ok");
+
+            element.removeAllNotes();
+            labels.splice(index, 1);
+            this.setState({
+                notes: labels
+            });
+
+            return true;
+        });
+
+        NoteHelper.saveData(this.state.labels, this.state.notes);
+    };
+
 
     changeCurrentLabel = (label) => {
         let newLabel = undefined;
@@ -99,6 +144,7 @@ class AppController extends Component {
                 saveLabel={this.saveLabel}
                 saveNote={this.saveNote}
                 deleteNote={this.deleteNote}
+                deleteLabel={this.deleteLabel}
             />
         );
     }

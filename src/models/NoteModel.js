@@ -30,7 +30,7 @@ class NoteModel {
             throw new TypeError("Parameter is not a LabelModel");
         }
 
-        return this.labels.find((element, index) => {
+        this.labels.find((element, index) => {
             if (label !== element) {
                 return false;
             }
@@ -40,6 +40,12 @@ class NoteModel {
 
             return true;
         });
+    }
+
+    removeAllLabels() {
+        for (let i = this.labels.length - 1; i >= 0; i--) {
+            this.removeLabel(this.labels[i]);
+        }
     }
 }
 

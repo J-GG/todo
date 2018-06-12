@@ -55,15 +55,15 @@ class Note extends Component {
         return (
             <div>
                 <Card className={this.props.className}
-                      style={this.getStyleFromColorEnum(fromName(this.props.color))}>
-                    <CardContent onClick={() => this.props.handleNoteClick(this.props.uuid)} className="Note-text">
+                      style={this.getStyleFromColorEnum(fromName(this.props.note.color))}>
+                    <CardContent onClick={() => this.props.handleNoteClick(this.props.note)} className="Note-text">
                         <Typography variant="title" gutterBottom>
                             <span className="Note-title">
-                                {this.props.title.length > 40 ? this.props.title.substr(0, 40) + "..." : this.props.title}
+                                {this.props.note.title.length > 40 ? this.props.note.title.substr(0, 40) + "..." : this.props.note.title}
                             </span>
                         </Typography>
                         <Typography component="p">
-                            {this.props.content.length > 150 ? this.props.content.substr(0, 150) + "..." : this.props.content}
+                            {this.props.note.content.length > 150 ? this.props.note.content.substr(0, 150) + "..." : this.props.note.content}
                         </Typography>
                     </CardContent>
                     <CardActions disableActionSpacing className="Note-bottomBtn">
@@ -81,13 +81,13 @@ class Note extends Component {
                                     <Avatar className={"ColorPanel-colorButton " + this.props.classes.colorButton}
                                             style={this.getStyleFromColorEnum(ColorEnum[key])}
                                             key={key}
-                                            onClick={() => this.props.handleColorChange(this.props.uuid, ColorEnum[key])}
+                                            onClick={() => this.props.handleColorChange(this.props.note, ColorEnum[key])}
                                     />
                                 ))
                             }
                         </Paper>
                         <Tooltip title="Delete">
-                            <IconButton onClick={() => this.props.handleDelete(this.props.uuid)}>
+                            <IconButton onClick={() => this.props.handleDelete(this.props.note)}>
                                 <DeleteIcon/>
                             </IconButton>
                         </Tooltip>

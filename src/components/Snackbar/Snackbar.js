@@ -1,10 +1,10 @@
 import React, {Component} from "react";
-import Snackbar from '@material-ui/core/Snackbar';
+import MaterialSnackbar from '@material-ui/core/Snackbar';
 import IconButton from '@material-ui/core/IconButton';
 import Button from '@material-ui/core/Button';
 import CloseIcon from '@material-ui/icons/Close';
 
-class SnackbarNote extends Component {
+class Snackbar extends Component {
 
     constructor(props) {
         super(props);
@@ -15,7 +15,7 @@ class SnackbarNote extends Component {
 
     render() {
         return (
-            <Snackbar
+            <MaterialSnackbar
                 anchorOrigin={{vertical: 'bottom', horizontal: "left"}}
                 open={this.props.open}
                 onClose={this.props.onClose}
@@ -34,4 +34,4 @@ class SnackbarNote extends Component {
     }
 }
 
-export default SnackbarNote;
+export default Snackbar;
