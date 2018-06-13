@@ -20,7 +20,11 @@ class LabelDialog extends Component {
     }
 
     handleChange = (event) => {
-        this.state.label[event.target.name] = event.target.value;
+        let label = this.state.label;
+        label[event.target.name] = event.target.value;
+        this.setState({
+            label: label
+        });
     };
 
     render() {

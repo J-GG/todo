@@ -57,19 +57,21 @@ class NoteDialog extends Component {
     }
 
     handleChange = (event) => {
+        let note = this.state.note;
+
         if (event.target.name === "labels") {
             this.props.note.removeAllLabels();
             event.target.value.forEach(selectedLabelTitle => {
                 let label = this.props.labels.find(label => {
                     return label.title === selectedLabelTitle;
                 });
-                this.state.note.addLabel(label);
+                note.addLabel(label);
             });
         } else {
-            this.state.note[event.target.name] = event.target.value;
+            note[event.target.name] = event.target.value;
         }
         this.setState({
-            note: this.state.note
+            note: note
         });
     };
 

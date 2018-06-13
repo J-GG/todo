@@ -29,9 +29,6 @@ class AppController extends Component {
                 }
 
                 labels.splice(index, 1, label);
-                this.setState({
-                    labels: labels
-                });
 
                 return true;
             });
@@ -39,9 +36,12 @@ class AppController extends Component {
             if (!labelToBeEdited) {
                 this.state.labels.push(label);
             }
-        }
+            this.setState({
+                labels: this.state.labels
+            });
 
-        NoteHelper.saveData(this.state.labels, this.state.notes);
+            NoteHelper.saveData(this.state.labels, this.state.notes);
+        }
     };
 
     saveNote = (note) => {
@@ -67,9 +67,9 @@ class AppController extends Component {
             if (!noteToBeEdited) {
                 this.state.notes.push(note);
             }
-        }
 
-        NoteHelper.saveData(this.state.labels, this.state.notes);
+            NoteHelper.saveData(this.state.labels, this.state.notes);
+        }
     };
 
     deleteNote = (note) => {
@@ -105,12 +105,11 @@ class AppController extends Component {
             if (element.uuid !== label.uuid) {
                 return false;
             }
-            console.log("ok");
 
             element.removeAllNotes();
             labels.splice(index, 1);
             this.setState({
-                notes: labels
+                labels: labels
             });
 
             return true;

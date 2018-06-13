@@ -50,6 +50,9 @@ const styles = theme => ({
     },
     menuItemActive: {
         background: "rgba(0, 0, 0, 0.08)"
+    },
+    labelTitle: {
+        wordBreak: "break-all"
     }
 });
 
@@ -58,7 +61,6 @@ class Menu extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            menuOpen: false,
             labelShownInLabelDialog: new LabelModel(),
             isLabelDialogOpen: false,
             menuOfLabelShown: undefined,
@@ -119,6 +121,9 @@ class Menu extends Component {
 
     handleDeleteLabel = (label) => {
         this.handleLabelMoreClose();
+        if (label === this.props.currentLabel) {
+            this.handleChangeCurrentLabel();
+        }
 
         let notesDuplicate = Object.assign([], label.notes);
 
@@ -147,6 +152,10 @@ class Menu extends Component {
         }
     };
 
+    handleChangeCurrentLabel = (label) => {
+        this.props.changeCurrentLabel(label);
+    };
+
     render() {
         return (
             <div className="Menu">
@@ -157,9 +166,7 @@ class Menu extends Component {
                     <Divider/>
                     <div className="Menu-itemsList">
                         <List>
-                            <ListItem button onClick={() => {
-                                this.props.changeCurrentLabel()
-                            }}
+                            <ListItem button onClick={() => this.handleChangeCurrentLabel()}
                                       className={classNames(!this.props.currentLabel && this.props.classes.menuItemActive)}
                             >
                                 <ListItemIcon>
@@ -171,9 +178,7 @@ class Menu extends Component {
                                 this.props.labels.map((label) => (
                                     <ListItem button onMouseEnter={() => this.handleMouseEnterLabel(label)}
                                               onMouseLeave={this.handleMouseLeaveLabel}
-                                              onClick={() => {
-                                                  this.props.changeCurrentLabel(label)
-                                              }}
+                                              onClick={() => this.handleChangeCurrentLabel(label)}
                                               className={classNames(this.props.currentLabel === label && this.props.classes.menuItemActive)}
                                               key={label.uuid}>
                                         <ListItemIcon>
@@ -181,7 +186,8 @@ class Menu extends Component {
                                                 className={this.props.classes.labelIcon}
                                                 style={{backgroundColor: fromName(label.color).color}}>{label.title.substr(0, 1)}</Avatar>
                                         </ListItemIcon>
-                                        <ListItemText primary={label.title}/>
+                                        <ListItemText primary={label.title.substr(0, 25)}
+                                                      className={this.props.classes.labelTitle}/>
                                         <ListItemSecondaryAction
                                             className={this.state.showLabelMoreIcon === label.uuid ? "Menu-labelEditIcon--show" : "Menu-labelEditIcon"}
                                             onMouseEnter={() => this.handleMouseEnterLabel(label)}

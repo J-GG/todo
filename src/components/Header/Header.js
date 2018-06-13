@@ -10,11 +10,6 @@ import ColorEnum, {fromName} from "../../models/ColorEnum";
 const styles = theme => ({
     appBar: {
         position: 'fixed',
-        transition: theme.transitions.create(['margin', 'width'], {
-            easing: theme.transitions.easing.sharp,
-            duration: theme.transitions.duration.leavingScreen,
-        }),
-        backgroundColor: "#FFFFFF",
         color: "#000000"
     }
 });
