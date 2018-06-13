@@ -12,6 +12,7 @@ import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import Chip from '@material-ui/core/Chip';
 import MenuItem from '@material-ui/core/MenuItem';
+import ColorPanel from "../ColorPanel/ColorPanel";
 import {withStyles} from '@material-ui/core/styles';
 
 const styles = theme => ({
@@ -70,6 +71,14 @@ class NoteDialog extends Component {
         } else {
             note[event.target.name] = event.target.value;
         }
+        this.setState({
+            note: note
+        });
+    };
+
+    handleColorChange = (colorEnum) => {
+        let note = this.state.note;
+        note.color = colorEnum.name;
         this.setState({
             note: note
         });
@@ -138,6 +147,10 @@ class NoteDialog extends Component {
                                 ))}
                             </Select>
                         </FormControl>
+                        <ColorPanel
+                            selectedColor={this.props.note.color}
+                            handleClickColor={this.handleColorChange}
+                        />
                     </DialogContent>
                     <DialogActions>
                         <Button onClick={this.props.handleClose} color="secondary">

@@ -118,7 +118,6 @@ class AppController extends Component {
         NoteHelper.saveData(this.state.labels, this.state.notes);
     };
 
-
     changeCurrentLabel = (label) => {
         let newLabel = undefined;
         if (label) {

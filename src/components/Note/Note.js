@@ -1,5 +1,4 @@
 import React, {Component} from "react";
-import {withStyles} from "@material-ui/core/styles";
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
 import Typography from "@material-ui/core/Typography";
@@ -8,20 +7,11 @@ import ColorLensIcon from "@material-ui/icons/ColorLens";
 import CardActions from "@material-ui/core/CardActions";
 import IconButton from "@material-ui/core/IconButton";
 import Paper from "@material-ui/core/Paper";
-import Avatar from "@material-ui/core/Avatar";
+import ColorPanel from "../ColorPanel/ColorPanel";
 import Tooltip from "@material-ui/core/Tooltip";
-import ColorEnum, {fromName} from "../../models/ColorEnum";
+import {fromName} from "../../models/ColorEnum";
 
 import "./Note.css";
-
-const styles = {
-    colorButton: {
-        width: "20px",
-        height: "20px",
-        margin: "2px",
-        boxShadow: "inset 0 0 0 1px rgba(0, 0, 0, 0.1)"
-    }
-};
 
 class Note extends Component {
 
@@ -76,15 +66,10 @@ class Note extends Component {
                         </Tooltip>
                         <Paper elevation={4} className={colorPanelClasses} onMouseEnter={this.handleShowColorPanel}
                                onMouseLeave={this.handleHideColorPanel}>
-                            {
-                                Object.keys(ColorEnum).map((key) => (
-                                    <Avatar className={"ColorPanel-colorButton " + this.props.classes.colorButton}
-                                            style={this.getStyleFromColorEnum(ColorEnum[key])}
-                                            key={key}
-                                            onClick={() => this.props.handleColorChange(this.props.note, ColorEnum[key])}
-                                    />
-                                ))
-                            }
+                            <ColorPanel
+                                selectedColor={this.props.note.color}
+                                handleClickColor={(colorEnum) => this.props.handleColorChange(this.props.note, colorEnum)}
+                            />
                         </Paper>
                         <Tooltip title="Delete">
                             <IconButton onClick={() => this.props.handleDelete(this.props.note)}>
@@ -98,4 +83,4 @@ class Note extends Component {
     }
 }
 
-export default withStyles(styles)(Note);
+export default Note;

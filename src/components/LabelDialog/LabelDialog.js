@@ -6,6 +6,7 @@ import DialogContent from "@material-ui/core/DialogContent";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import Slide from "@material-ui/core/Slide";
 import TextField from "@material-ui/core/TextField";
+import ColorPanel from "../ColorPanel/ColorPanel";
 
 function Transition(props) {
     return <Slide direction="up" {...props} />;
@@ -22,6 +23,14 @@ class LabelDialog extends Component {
     handleChange = (event) => {
         let label = this.state.label;
         label[event.target.name] = event.target.value;
+        this.setState({
+            label: label
+        });
+    };
+
+    handleColorChange = (colorEnum) => {
+        let label = this.state.label;
+        label.color = colorEnum.name;
         this.setState({
             label: label
         });
@@ -48,6 +57,10 @@ class LabelDialog extends Component {
                             fullWidth
                             defaultValue={this.state.label.title}
                             onChange={this.handleChange}
+                        />
+                        <ColorPanel
+                            selectedColor={this.props.label.color}
+                            handleClickColor={this.handleColorChange}
                         />
                     </DialogContent>
                     <DialogActions>

@@ -103,7 +103,7 @@ class Content extends Component {
         });
     };
 
-    handleColorChange = (note, colorEnum) => {
+    handleNoteColorChange = (note, colorEnum) => {
         note.color = colorEnum.name;
         this.setState({
             notes: this.state.notes
@@ -144,7 +144,7 @@ class Content extends Component {
                                 note={note}
                                 handleDelete={this.handleDeleteBtnClick}
                                 handleNoteClick={this.handleNoteClick}
-                                handleColorChange={this.handleColorChange}
+                                handleColorChange={this.handleNoteColorChange}
                             />
                         ))
                     }
