@@ -12,6 +12,7 @@ import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import Chip from '@material-ui/core/Chip';
 import MenuItem from '@material-ui/core/MenuItem';
+import FormLabel from "@material-ui/core/FormLabel";
 import ColorPanel from "../ColorPanel/ColorPanel";
 import {withStyles} from '@material-ui/core/styles';
 
@@ -21,9 +22,10 @@ const styles = theme => ({
         flexWrap: 'wrap',
     },
     formControl: {
-        margin: theme.spacing.unit,
-        minWidth: 120,
-        maxWidth: 300,
+        marginTop: theme.spacing.unit,
+        marginBottom: theme.spacing.unit,
+        minWidth: "30%",
+        maxWidth: "100%",
     },
     chips: {
         display: 'flex',
@@ -50,38 +52,24 @@ function Transition(props) {
 }
 
 class NoteDialog extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            note: this.props.note
-        };
-    }
-
     handleChange = (event) => {
-        let note = this.state.note;
-
         if (event.target.name === "labels") {
             this.props.note.removeAllLabels();
             event.target.value.forEach(selectedLabelTitle => {
                 let label = this.props.labels.find(label => {
                     return label.title === selectedLabelTitle;
                 });
-                note.addLabel(label);
+                this.props.note.addLabel(label);
             });
         } else {
-            note[event.target.name] = event.target.value;
+            this.props.note[event.target.name] = event.target.value;
         }
-        this.setState({
-            note: note
-        });
+        this.forceUpdate();
     };
 
     handleColorChange = (colorEnum) => {
-        let note = this.state.note;
-        note.color = colorEnum.name;
-        this.setState({
-            note: note
-        });
+        this.props.note.color = colorEnum.name;
+        this.forceUpdate();
     };
 
     render() {
@@ -103,7 +91,7 @@ class NoteDialog extends Component {
                             label="Title"
                             type="text"
                             fullWidth
-                            defaultValue={this.state.note.title}
+                            defaultValue={this.props.note.title}
                             onChange={this.handleChange}
                         />
                         <TextField
@@ -112,7 +100,7 @@ class NoteDialog extends Component {
                             multiline
                             fullWidth
                             rows="5"
-                            defaultValue={this.state.note.content}
+                            defaultValue={this.props.note.content}
                             onChange={this.handleChange}
                         />
                         <FormControl className={this.props.classes.formControl}>
@@ -120,7 +108,7 @@ class NoteDialog extends Component {
                             <Select
                                 multiple
                                 name="labels"
-                                value={this.state.note.labels.map(label => label.title)}
+                                value={this.props.note.labels.map(label => label.title)}
                                 onChange={this.handleChange}
                                 input={<Input id="select-multiple-chip"/>}
                                 renderValue={selected => (
@@ -147,6 +135,7 @@ class NoteDialog extends Component {
                                 ))}
                             </Select>
                         </FormControl>
+                        <FormLabel component="legend">Color</FormLabel>
                         <ColorPanel
                             selectedColor={this.props.note.color}
                             handleClickColor={this.handleColorChange}
@@ -157,7 +146,7 @@ class NoteDialog extends Component {
                             Cancel
                         </Button>
                         <Button
-                            onClick={() => this.props.handleSave(this.state.note)}
+                            onClick={() => this.props.handleSave(this.props.note)}
                             color="primary">
                             Save
                         </Button>

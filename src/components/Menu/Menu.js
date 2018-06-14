@@ -113,7 +113,7 @@ class Menu extends Component {
 
     handleLabelEdit = (label) => {
         this.setState({
-            labelShownInLabelDialog: label,
+            labelShownInLabelDialog: Object.assign(new LabelModel(), label),
             isLabelDialogOpen: true
         });
         this.handleLabelMoreClose();

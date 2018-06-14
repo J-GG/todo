@@ -98,7 +98,7 @@ class Content extends Component {
 
     handleNoteClick = (note) => {
         this.setState({
-            noteShownInNoteDialog: note,
+            noteShownInNoteDialog: Object.assign(new NoteModel(), note),
             isNoteDialogOpen: true
         });
     };

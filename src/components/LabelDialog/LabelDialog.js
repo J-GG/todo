@@ -7,33 +7,30 @@ import DialogTitle from "@material-ui/core/DialogTitle";
 import Slide from "@material-ui/core/Slide";
 import TextField from "@material-ui/core/TextField";
 import ColorPanel from "../ColorPanel/ColorPanel";
+import {withStyles} from '@material-ui/core/styles';
+import FormLabel from "@material-ui/core/FormLabel";
+
+import "../Note/Note.css";
+
+const styles = theme => ({
+    colorPanel: {
+        marginTop: theme.spacing.unit
+    }
+});
 
 function Transition(props) {
     return <Slide direction="up" {...props} />;
 }
 
 class LabelDialog extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            label: this.props.label
-        };
-    }
-
     handleChange = (event) => {
-        let label = this.state.label;
-        label[event.target.name] = event.target.value;
-        this.setState({
-            label: label
-        });
+        this.props.label[event.target.name] = event.target.value;
+        this.forceUpdate();
     };
 
     handleColorChange = (colorEnum) => {
-        let label = this.state.label;
-        label.color = colorEnum.name;
-        this.setState({
-            label: label
-        });
+        this.props.label.color = colorEnum.name;
+        this.forceUpdate();
     };
 
     render() {
@@ -55,20 +52,23 @@ class LabelDialog extends Component {
                             label="Title"
                             type="text"
                             fullWidth
-                            defaultValue={this.state.label.title}
+                            defaultValue={this.props.label.title}
                             onChange={this.handleChange}
                         />
-                        <ColorPanel
-                            selectedColor={this.props.label.color}
-                            handleClickColor={this.handleColorChange}
-                        />
+                        <div className={this.props.classes.colorPanel}>
+                            <FormLabel component="legend">Color</FormLabel>
+                            <ColorPanel
+                                selectedColor={this.props.label.color}
+                                handleClickColor={this.handleColorChange}
+                            />
+                        </div>
                     </DialogContent>
                     <DialogActions>
                         <Button onClick={this.props.handleClose} color="secondary">
                             Cancel
                         </Button>
                         <Button
-                            onClick={() => this.props.handleSave(this.state.label)}
+                            onClick={() => this.props.handleSave(this.props.label)}
                             color="primary">
                             Save
                         </Button>
@@ -79,4 +79,4 @@ class LabelDialog extends Component {
     }
 }
 
-export default LabelDialog;
+export default withStyles(styles)(LabelDialog);
