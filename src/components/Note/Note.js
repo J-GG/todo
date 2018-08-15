@@ -42,6 +42,7 @@ class Note extends Component {
 
     render() {
         let colorPanelClasses = this.state.showColorPanel ? "ColorPanel ColorPanel--show" : "ColorPanel";
+        let content = this.props.note.content.length > 150 ? this.props.note.content.substr(0, 150) + "..." : this.props.note.content
         return (
             <div>
                 <Card className={this.props.className}
@@ -53,7 +54,13 @@ class Note extends Component {
                             </span>
                         </Typography>
                         <Typography component="p">
-                            {this.props.note.content.length > 150 ? this.props.note.content.substr(0, 150) + "..." : this.props.note.content}
+                            {content.split("\n").map(function (item) {
+                                return (
+                                    <span>
+                                        {item}<br/>
+                                    </span>
+                                )
+                            })}
                         </Typography>
                     </CardContent>
                     <CardActions disableActionSpacing className="Note-bottomBtn">
