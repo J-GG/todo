@@ -13,7 +13,7 @@ class AppController extends Component {
             labels: labels,
             notes: notes,
             currentLabel: undefined
-        }
+        };
     }
 
     saveLabel = (label) => {
@@ -23,12 +23,12 @@ class AppController extends Component {
         }
 
         if (label.title) {
-            let labelToBeEdited = this.state.labels.find((element, index, labels) => {
+            let labelToBeEdited = this.state.labels.find((element) => {
                 if (element.uuid !== label.uuid) {
                     return false;
                 }
 
-                labels.splice(index, 1, label);
+                element.updateLabel(label);
 
                 return true;
             });
@@ -36,9 +36,6 @@ class AppController extends Component {
             if (!labelToBeEdited) {
                 this.state.labels.push(label);
             }
-            this.setState({
-                labels: this.state.labels
-            });
 
             NoteHelper.saveData(this.state.labels, this.state.notes);
         }
@@ -51,15 +48,11 @@ class AppController extends Component {
         }
 
         if (note.title || note.content) {
-            let noteToBeEdited = this.state.notes.find((element, index, notes) => {
+            let noteToBeEdited = this.state.notes.find((element) => {
                 if (element.uuid !== note.uuid) {
                     return false;
                 }
-
-                notes.splice(index, 1, note);
-                this.setState({
-                    notes: notes
-                });
+                element.updateNote(note);
 
                 return true;
             });

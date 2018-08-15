@@ -9,6 +9,7 @@ import IconButton from "@material-ui/core/IconButton";
 import Paper from "@material-ui/core/Paper";
 import ColorPanel from "../ColorPanel/ColorPanel";
 import Tooltip from "@material-ui/core/Tooltip";
+import Chip from "@material-ui/core/Chip";
 import {fromName} from "../../models/ColorEnum";
 
 import "./Note.css";
@@ -42,12 +43,13 @@ class Note extends Component {
 
     render() {
         let colorPanelClasses = this.state.showColorPanel ? "ColorPanel ColorPanel--show" : "ColorPanel";
-        let content = this.props.note.content.length > 150 ? this.props.note.content.substr(0, 150) + "..." : this.props.note.content
+        let content = this.props.note.content.length > 150 ? this.props.note.content.substr(0, 150) + "..." : this.props.note.content;
         return (
             <div>
                 <Card className={this.props.className}
                       style={this.getStyleFromColorEnum(fromName(this.props.note.color))}>
-                    <CardContent onClick={() => this.props.handleNoteClick(this.props.note)} className="Note-text">
+                    <CardContent onClick={() => this.props.handleNoteClick(this.props.note)}
+                                 className="Note-pointer">
                         <Typography variant="title" gutterBottom>
                             <span className="Note-title">
                                 {this.props.note.title.length > 40 ? this.props.note.title.substr(0, 40) + "..." : this.props.note.title}
@@ -56,14 +58,29 @@ class Note extends Component {
                         <Typography component="p">
                             {content.split("\n").map(function (item) {
                                 return (
-                                    <span>
+                                    <span key={Math.random()}>
                                         {item}<br/>
                                     </span>
                                 )
                             })}
                         </Typography>
                     </CardContent>
-                    <CardActions disableActionSpacing className="Note-bottomBtn">
+                    <CardContent style={{paddingTop: 0, paddingBottom: 0}}
+                                 onClick={() => this.props.handleNoteClick(this.props.note)}
+                                 className="Note-pointer">
+                        <Typography component="div">
+                            {
+                                this.props.note.labels.map((label) => (
+                                    <Chip label={label.title}
+                                          style={{margin: 2, fontSize: "0.6rem", borderRadius: 2, cursor: "pointer"}}
+                                          key={label.uuid}
+                                    />
+                                ))
+                            }
+                        </Typography>
+                    </CardContent>
+                    <CardActions disableActionSpacing className="Note-bottomBtn"
+                                 style={{paddingTop: 3, paddingBottom: 3}}>
                         <Tooltip title="Color">
                             <IconButton onMouseEnter={this.handleShowColorPanel}
                                         onMouseLeave={this.handleHideColorPanel}>
@@ -71,7 +88,9 @@ class Note extends Component {
                             </IconButton>
 
                         </Tooltip>
-                        <Paper elevation={4} className={colorPanelClasses} onMouseEnter={this.handleShowColorPanel}
+                        <Paper elevation={4}
+                               className={colorPanelClasses}
+                               onMouseEnter={this.handleShowColorPanel}
                                onMouseLeave={this.handleHideColorPanel}>
                             <ColorPanel
                                 selectedColor={this.props.note.color}

@@ -10,6 +10,13 @@ class LabelModel {
         this.notes = [];
     }
 
+    updateLabel(label) {
+        this.uuid = label.uuid;
+        this.title = label.title;
+        this.color = label.color;
+        this.notes = label.notes;
+    }
+
     addNote(note) {
         if (!note instanceof NoteModel) {
             throw new TypeError("Parameter is not a NoteModel");

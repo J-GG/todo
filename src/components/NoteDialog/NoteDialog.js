@@ -52,6 +52,7 @@ function Transition(props) {
 }
 
 class NoteDialog extends Component {
+
     handleChange = (event) => {
         if (event.target.name === "labels") {
             this.props.note.removeAllLabels();

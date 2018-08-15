@@ -7,11 +7,9 @@ class NoteHelper {
         let parsedLabels = localStorage.getItem("labels") !== null ? JSON.parse(localStorage.getItem("labels")) : [];
 
         let labels = [];
-        let mappedLabels = {};
         parsedLabels.forEach((element) => {
             let label = Object.assign(new LabelModel(), element);
             labels.push(label);
-            mappedLabels[element.uuid] = label;
         });
 
         let notes = [];
